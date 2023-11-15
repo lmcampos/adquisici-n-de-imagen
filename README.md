@@ -1,0 +1,1 @@
+# adquisici-n-de-imagen

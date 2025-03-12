@@ -11,12 +11,12 @@ import serial
 
 
 def main():
-    #defino elo pin por el que interrumpirá la EDU-CIAA-NXP
+    #defino el pin por el que interrumpirá la EDU-CIAA-NXP (trigger)
     pin = 17 #pin físico 17
 
     #creo una cola para comunicar los hilos control_grabación y control_camara
     grabacion_queue = Queue()
-    #Creo una cola para comunicar elhilo decontrol de grabacióon y el hilo que escritor del archivo los
+    #Creo una cola para comunicar el hilo de control, de grabacióon y el hilo que escritor del archivo los
     cola_log = Queue()  
     #creo una cola para la comuniocación entre el hilo principal y el hilo control_grabación 
     cola_detener_todos_los_hilos = Queue()

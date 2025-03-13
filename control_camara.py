@@ -4,6 +4,7 @@ import time
 import RPi.GPIO as GPIO
 from  queue import Queue
 from gpiozero import Button
+from modulo_comun import recording_started_event
 
 class ControlCamara(threading.Thread):
     def __init__ (self, grabacion_queue, pin,cola_log):
@@ -42,19 +43,28 @@ class ControlCamara(threading.Thread):
     def run(self):
         print ("hilo 2 - control Camara")
         while not self.detener_hilo.is_set():
-            print ("hilo 2 - me bloqueo para esperar un comando 'i' o 'd'")
+            #print ("hilo 2 - me bloqueo para esperar un comando 'i' o 'd'")
             if not self.grabacion_queue.empty():
                 comando = self.grabacion_queue.get()
                 if comando == "iniciar":
                     #self.inicio_time_sistema = time.time()
-                    self.camera.start_preview()
+                    #self.camera.start_preview()
                     self.camera.start_recording('video.h264')
                     #self.inicio_time_sistema_buffering = time.time() - self.inicio_time_sistema  
                     #self.inicio_time_camara_grabación = self.camera.frame.timestamp
                     self.start_time = time.time() 
-                    self.grabando = True                    
+                    self.grabando = True       
+                    # para que se estabilice la grabación porque no me captura el primer frame.
+                    # Además, quizas la camára no ha capturado un fotograma o no ha actualizado 
+                    # su valor de timestamp. Esto ocurre cuando se inicia la grabación y, de inmediato, se intenta 
+                    #acceder acceder a esa propiedad sin dar tiempo a que se incialice 
+                    time.sleep(0.1)
+                    recording_started_event.set()             
                     
                      # Avisar al microcontrolador con un pulso de 0.5s
+                     # que inicie la estimulación - Esto es cuando se realizaron pruebas 
+                     # para verificar las capturas de marca de tiempo al iniciar el encendido de los leds 
+                     # y se almacenaban dichas marcas de tiempo en el archivologs 
                     GPIO.output(self.pin_aviso, GPIO.HIGH)
                     self.time_pin_aviso = time.time() - self.start_time 
                     time.sleep(0.5)      # Esperar 0.5 segundos
@@ -67,6 +77,7 @@ class ControlCamara(threading.Thread):
                         self.camera.stop_preview()
                         self.grabando = False             
                         self.end_recording = time.time()-self.start_time 
+                        recording_started_event.clear()
                         print("tiempo de grabación:",self.end_recording)           
                     else:
                         if comando == "stop":
@@ -95,7 +106,7 @@ class ControlCamara(threading.Thread):
 
             delta_s = time.time() - self.start_time
 
-
+            
             # Empaquetar datos en una lista
             metadatos = [
                 self.numero_de_fotograma,    # N° de frame
@@ -108,6 +119,7 @@ class ControlCamara(threading.Thread):
                 self.time_pin_aviso,       # tiempo en el que se avisa al micro que se inicia la grabación                    
             ]
             # Enviar al log
+            print ("envio a la cola log para almacenar la captura de marca de tiempo")
             self.cola_log.put(metadatos)
             
 

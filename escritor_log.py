@@ -24,9 +24,9 @@ class EscritorLog(threading.Thread):
                                     'tiempo en el que se avisa al micro que se inicia la grabación'
                                     #'tiempo del video'                                    
                                     ])
-        
+            print ("inicio del hilo de escritura en archivo log" )                        
             while not self.detener_hilo.is_set():
-                print("hilo 5 - Escribo en el archivo Log. ")
+                #print("hilo 5 - Escribo en el archivo Log. ")
                 if not self.cola_log.empty():
                     dato_log = self.cola_log.get()
                     print(dato_log)   

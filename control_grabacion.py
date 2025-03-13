@@ -17,7 +17,7 @@ class ControlGrabacion(threading.Thread):
     def run (self):
         print("hilo 1 - control grabación")
         while not self.detener_hilo.is_set():
-            print("hilo 1 ")
+            #print("hilo 1 ")
             command = input("presione 'i' para iniciar grabación o 'd' para detener grabación").strip().lower()
             if command == 'i' and not self.is_recording:
                 self.is_recording = True

@@ -57,7 +57,7 @@ class ControlCamara(threading.Thread):
                     # para que se estabilice la grabación porque no me captura el primer frame.
                     # Además, quizas la camára no ha capturado un fotograma o no ha actualizado 
                     # su valor de timestamp. Esto ocurre cuando se inicia la grabación y, de inmediato, se intenta 
-                    #acceder acceder a esa propiedad sin dar tiempo a que se incialice 
+                    # acceder acceder a esa propiedad sin dar tiempo a que se incialice. 
                     time.sleep(0.1)
                     recording_started_event.set()             
                     
@@ -119,7 +119,7 @@ class ControlCamara(threading.Thread):
                 self.time_pin_aviso,       # tiempo en el que se avisa al micro que se inicia la grabación                    
             ]
             # Enviar al log
-            print ("envio a la cola log para almacenar la captura de marca de tiempo")
+            # print ("envio a la cola log para almacenar la captura de marca de tiempo")
             self.cola_log.put(metadatos)
             
 
